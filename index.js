@@ -2,6 +2,7 @@ import {
 	bindOperationToActionCreators,
 } from "redux-operations";
 import { bindActionCreators } from "redux";
+import t from "tcomb-validation";
 
 /**
  * Replacement for switch-case flow control
@@ -39,4 +40,19 @@ export function bindOperation(dispatch, bindArray) {
  */
 export function isEmptyOrFalsy(obj) {
 	return !obj || (Object.keys(obj).length === 0 && obj.constructor === Object);
+}
+
+/**
+ * DRY subtype helper
+ * @param type
+ * @param getValidationErrorMessage
+ * @param options
+ * @returns {*}
+ */
+export function subType(type, getValidationErrorMessage, options) {
+	const _subtype = t.refinement(type, (x) => {
+		return !t.String.is(getValidationErrorMessage(x));
+	}, options);
+	_subtype.getValidationErrorMessage = getValidationErrorMessage;
+	return _subtype;
 }

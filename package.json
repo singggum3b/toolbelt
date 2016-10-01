@@ -10,6 +10,7 @@
   "license": "ISC",
 	"dependencies": {
 		"redux": "^3.5.2",
-		"redux-operations": "^0.5.2"
+		"redux-operations": "^0.5.2",
+		"tcomb-validation": "^3.2.2"
 	}
 }
