@@ -7,10 +7,23 @@ import t from "tcomb-validation";
  * @param options
  * @returns {*}
  */
-export function subType(type, getValidationErrorMessage, options) {
-	const _subtype = t.refinement(type, (x) => {
-		return !t.String.is(getValidationErrorMessage(x));
+function _subType(type, overrideTypeMsg, getValidationErrorMessage, options) {
+	function _getVldMsg(x) {
+		if (overrideTypeMsg) {
+			if (!t.validate(x, type).isValid()) return overrideTypeMsg;
+		}
+		return getValidationErrorMessage(x);
+	}
+	const _subtype = t.refinement(overrideTypeMsg ? t.Any : type, (x) => {
+		return !t.String.is(_getVldMsg(x));
 	}, options);
-	_subtype.getValidationErrorMessage = getValidationErrorMessage;
+	_subtype.getValidationErrorMessage = _getVldMsg;
 	return _subtype;
+}
+
+export function subType() {
+	if (arguments.length < 4) throw new Error("Subtype call need 4 argument");
+	if (arguments[1] && typeof arguments[1] !== "string")
+		throw new Error("[overrideTypeMsg] must be a string or null");
+	return _subType.apply(null,arguments);
 }
